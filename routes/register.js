@@ -30,17 +30,17 @@ router.post('/', (req, res) => {
 
     userInfo.password = hash;
     
-    users.create({
-        name: req.body.name,
-        password: hash
-    })
+    // users.create({
+    //     name: req.body.name,
+    //     password: hash
+    // })
 
 	db('users')
 		.insert(userInfo)
 		.then(ids => {
             if(ids) {
-                const token = generateToken(user)
-            res.status(201).json({ids: user.id, token: token})
+                // const token = generateToken(user)
+            res.status(201).json(ids)
             }
 		})
 		.catch(err => res.status(500).json(err));
