@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const bcrypt = require('bcryptjs');
 
 const db = require('../database/dbconfig.js');
+const users = require('./users.js');
 
 const router = express.Router();
 
@@ -11,36 +12,40 @@ router.use(helmet());
 router.use(express.json());
 router.use(cors());
 
-// router.post('/', async (req, res) => {
-//     const userInfo = req.body;
-//     const hash = bcrypt.hashSync(userInfo.password, 14);
-
-//     userInfo.password = hash;
-//     try{
-//         const userData = await users('users').insert(userInfo)
-//         if(userData) {
-//             res.status(200).json(userData)
-//         } else {
-//             res.status(400).json(`{please register to view information}`)
-//         }
-//     }catch(err){
-//         res.status(500).json(err)
-//     }
-// });
+function generateToken(user) {
+    const payload = {
+        name: user.name
+    };
+    const secret = process.env.JWT_SECRET;
+    const options = {
+        expiresIn: '45m'
+    };
+    return jwt.sign(payload, secret, options)
+}
 
 router.post('/', (req, res) => {
 	const userInfo = req.body;
 
 	const hash = bcrypt.hashSync(userInfo.password, 12);
 
-	userInfo.password = hash;
+    userInfo.password = hash;
+    
+    users.create({
+        name: req.body.name,
+        password: hash
+    })
 
 	db('users')
 		.insert(userInfo)
 		.then(ids => {
-			res.status(201).json(ids);
+            if(ids) {
+                const token = generateToken(user)
+            res.status(201).json({ids: user.id, token: token})
+            }
 		})
 		.catch(err => res.status(500).json(err));
 });
+
+
 
 module.exports = router
