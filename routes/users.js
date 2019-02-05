@@ -3,7 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 
 const users = require('../database/dbconfig.js');
-const auth = require('../authenticate/authenticate.js')
+
 
 const router = express.Router();
 
@@ -12,8 +12,6 @@ router.use(express.json());
 router.use(cors());
 
 const jwt = require('jsonwebtoken');
-
-const jwtKey = process.env.JWT_SECRET
 
 function authenticate(req, res, next) {
     const token = req.headers.authorization;
