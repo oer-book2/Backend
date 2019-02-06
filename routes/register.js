@@ -5,7 +5,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const db = require('../database/dbconfig.js');
-const users = require('./users.js');
 
 const router = express.Router();
 
@@ -27,11 +26,8 @@ function generateToken(user) {
 
 router.post('/', async(req, res) => {
     const userInfo = req.body;
-    console.log('userinfo' , userInfo)
 	const hash = bcrypt.hashSync(userInfo.password, 12);
     userInfo.password = hash;
-    
-    //const users = await db('users')
     
     try{
         const data = await db('users').insert(userInfo)

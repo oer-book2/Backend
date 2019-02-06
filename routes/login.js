@@ -9,6 +9,10 @@ const db = require('../database/dbconfig.js');
 
 const router = express.Router();
 
+router.use(express.json());
+router.use(cors());
+router.use(helmet());
+
 function generateToken(user) {
     const payload = {
         name: user.name
