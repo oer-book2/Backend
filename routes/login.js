@@ -20,38 +20,19 @@ function generateToken(user) {
     return jwt.sign(payload, secret, options)
 }
 
-router.post('/', (req, res) => {
-	const creds = req.body;
 
-	db('users')
-		.where({ name: creds.name })
-		.first()
-		.then(user => {
-			if (user && bcrypt.compareSync(creds.password, user.password)) {
-				// login is successful
-				// create the token
-				const token = generateToken(user);
-
-				res.status(200).json({ message: `welcome ${user.name}`, token });
-			} else {
-				res.status(401).json({ you: 'shall not pass!!' });
-			}
-		})
-		.catch(err => res.status(500).json(err));
-});
-
-// router.post('/', async(req, res) => {  //login
-//     const creds = req.body;
-//     try{
-//         const data = await db('users').where({ name: creds.name} ).first()
-//         if(data && bcrypt.compareSync(creds.password, data.password)) {
-//             const token = generateToken(data);
-//             res.status(200).json({ message: `welcome ${data.name}`, token})
-//         } else {
-//             res.status(401).json({ you: `shall not pass!!!`})
-//         }
-//     }catch(err){
-//         res.status(500).json(err);
-//     }
-// })
+router.post('/', async(req, res) => {  //login
+    const creds = req.body;
+    try{
+        const data = await db('users').where({ name: creds.name} ).first()
+        if(data && bcrypt.compareSync(creds.password, data.password)) {
+            const token = generateToken(data);
+            res.status(201).json({ message: `welcome ${creds.name}`, token})
+        } else {
+            res.status(401).json({ message: `invalid name or password`})
+        }
+    }catch(err){
+        res.status(500).json({message: `login information not found`});
+    }
+})
 module.exports = router
