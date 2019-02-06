@@ -7,6 +7,7 @@ exports.up = function(knex, Promise) {
       books.string('author', 244)
       books.string('subject', 244)
       books.text('description', 380)
+
   })
 };
 
