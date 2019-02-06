@@ -4,6 +4,7 @@ exports.up = function(knex, Promise) {
     review.increments()
 
     review.text('comment')
+    review.integer('rating')
     review.integer('textbook_id').unsigned().references('id').inTable('text-books')
 
 })

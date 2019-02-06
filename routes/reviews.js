@@ -16,13 +16,16 @@ router.get('/', async(req, res) => {
         if(data) {
             res.status(200).json(data)
         }
-    }catch(err){}
-})
+    }catch(err){
+        res.status(500).json(err)
+    }
+});
+
 router.post('/', async(req, res) => {
     try{
         const review = req.body
         const reviewData = await db('reviews').insert(review)
-
+        
         if(reviewData) {
             res.status(201).json(reviewData)
         } else {
@@ -36,11 +39,15 @@ router.post('/', async(req, res) => {
 
 router.put('/:id', async(req, res) => {
     try{
+        const  tid  = await db('reviews').where({id: req.params.id }).select('textbook_id').first()
+        console.log(tid)
         const data = req.body
-        //const { comment } = req.body
         const reviews = await db('reviews').where({ id: req.params.id }).update(data)
 
         if(reviews) {
+            const average = await db('reviews').where({textbook_id: tid.textbook_id }).avg({'avg-rating': 'rating'}).first()
+            console.log(average)
+            const textbook = await db('text-books').where({id: tid.textbook_id}).update(average)
             res.status(200).json(reviews)
         } else {
             res.status(404).json(`{error: review was not edited}`)
@@ -53,15 +60,20 @@ router.put('/:id', async(req, res) => {
 
 router.delete('/:id', async(req, res) => {
     try{
+        const  tid  = await db('reviews').where({id: req.params.id }).select('textbook_id').first()
         const { id } = req.params
         db(id)
         const data = await db('reviews').where({ id: req.params.id }).del()
         if(data) {
+            const average = await db('reviews').where({textbook_id: tid.textbook_id }).avg({'avg-rating': 'rating'}).first()
+            
+            const textbook = await db('text-books').where({id: tid.textbook_id }).update(average)
             res.status(204).json(data)
         } else {
             res.status(404).json(`{ your review was not deleted }`)
         }
     }catch(err){
+        console.log(err)
         res.status(500).json(err)
     }
 })
