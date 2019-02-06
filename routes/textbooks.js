@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const jwt = require('jsonwebtoken');
 
 const db = require('../database/dbconfig.js');
 
@@ -10,7 +11,24 @@ router.use(express.json());
 router.use(cors());
 router.use(helmet());
 
-router.get('/', async(req,res) => {
+function authenticate(req, res, next) {
+    const token = req.headers.authorization;
+
+    if(token) {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+            if(err) {
+                res.status(401).json({message: `Name or password incorrect.`})
+            } else {
+                req.decodedToken = decodedToken;
+                next();
+            }
+        })
+    } else {
+        res.status(401).json({ message: `Please login or register to view textbooks.` })
+    }
+};
+
+router.get('/', authenticate, async(req,res) => {
     try{
         const data = await db('text-books')
         console.log(data)
