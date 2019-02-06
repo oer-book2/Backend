@@ -27,7 +27,8 @@ router.get('/', async(req,res) => {
          const { id } = req.params;
          const bookdata = await db('text-books').where({ id })
          if(bookdata) {
-             res.status(200).json(bookdata)
+             const reviews = await db('reviews').where({textbook_id: id}).select()
+             res.status(200).json({bookdata, reviews })
          } else {
              res.status(404).json(`{ sorry that book was not found}`)
          }
@@ -39,12 +40,18 @@ router.get('/', async(req,res) => {
  router.post('/:id/reviews', async(req, res) => {
     try{
         const { id } = req.params;
-        const bookdata = await db('text-books').where({ id })
-        console.log(bookdata)
+        console.log(id, 'id/reviews')
+        let bookdata = await db('text-books').where({ id })
+    
         if(bookdata) {
-            const reviews = await db('reviews').where({ textbook_id: id }).insert(req.body)
-            console.log(reviews)
-            res.status(201).json({ bookdata, reviews })
+            const reviews = await db('reviews').where({ textbook_id: id }).insert({...req.body, textbook_id: id})
+            const average = await db('reviews').where({textbook_id: id }).avg({'avg-rating': 'rating'}).first()
+            
+            const textbook = await db('text-books').where({id}).update(average)
+            // textbook.then(res => {console.log(res)}).catch( err => {console.log(err)})
+            
+            //  bookdata = await db('text-books').where({ id })
+            res.status(201).json({message: 'your review has been posted' }) //must do get after update post or delete
         } else {
             res.status(404).json(`{ sorry that book does not have any reviews }`)
         }
@@ -54,17 +61,4 @@ router.get('/', async(req,res) => {
     }
 });
 
-router.get('/:id/reviews', async(req, res) => {
-    try{
-        const { id } = req.params
-        const bookData = await db('text-books').where({ id })
-        if(bookData) {
-            const reviews = await db('reviews').where({ review_id: id })
-            res.status(200).json({ bookData, reviews })
-        }
-    }catch(err){
-        console.log(err, 'from get id/reviews')
-        res.status(500).json(err)
-    }
-})
 module.exports = router

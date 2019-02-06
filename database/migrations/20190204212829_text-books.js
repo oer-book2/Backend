@@ -7,8 +7,7 @@ exports.up = function(knex, Promise) {
       books.string('author', 244)
       books.string('subject', 244)
       books.text('description', 380)
-
-      books.integer('review_id').unsigned().references('id').inTable('reviews')
+      books.integer('avg-rating')
 
   })
 };
