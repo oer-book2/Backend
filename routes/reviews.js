@@ -58,7 +58,7 @@ router.put('/:id', async(req, res) => {
     }
 });
 
-router.delete('/:id', async(req, res) => {
+router.delete('/:id', async(req, res) => { //something is up with the delete. going to else statement
     try{
         const  tid  = await db('reviews').where({id: req.params.id }).select('textbook_id').first()
         const { id } = req.params
