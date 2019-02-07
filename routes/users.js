@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const jwt = require('jsonwebtoken');
 
 const users = require('../database/dbconfig.js');
 
@@ -11,7 +12,7 @@ router.use(helmet());
 router.use(express.json());
 router.use(cors());
 
-const jwt = require('jsonwebtoken');
+
 
 function authenticate(req, res, next) {
     const token = req.headers.authorization;
@@ -32,7 +33,7 @@ function authenticate(req, res, next) {
 
 
 
-router.get('/', authenticate, async(req, res) => {
+router.get('/',  async(req, res) => {
     try{
         const data = await users('users')
         console.log(data)

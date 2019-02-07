@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const jwt = require('jsonwebtoken');
 
 const db = require('../database/dbconfig.js');
 
@@ -10,7 +11,24 @@ router.use(express.json());
 router.use(cors());
 router.use(helmet());
 
-router.get('/', async(req,res) => {
+function authenticate(req, res, next) {
+    const token = req.headers.authorization;
+
+    if(token) {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+            if(err) {
+                res.status(401).json({message: `Name or password incorrect.`})
+            } else {
+                req.decodedToken = decodedToken;
+                next();
+            }
+        })
+    } else {
+        res.status(401).json({ message: `Please login or register to view textbooks.` })
+    }
+};
+
+router.get('/', authenticate, async(req,res) => {
     try{
         const data = await db('text-books')
         console.log(data)
@@ -45,7 +63,7 @@ router.get('/', async(req,res) => {
     
         if(bookdata) {
             const reviews = await db('reviews').where({ textbook_id: id }).insert({...req.body, textbook_id: id})
-            const average = await db('reviews').where({textbook_id: id }).avg({'avg-rating': 'rating'}).first()
+            const average = await db('reviews').where({textbook_id: id }).avg({'avg_rating': 'rating'}).first()
             
             const textbook = await db('text-books').where({id}).update(average)
             // textbook.then(res => {console.log(res)}).catch( err => {console.log(err)})
