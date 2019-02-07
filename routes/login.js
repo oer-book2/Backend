@@ -42,7 +42,7 @@ function generateToken(user) {
 }
 
 
-router.post('/', authenticate, async(req, res) => {  //login
+router.post('/', async(req, res) => {  //login
     const creds = req.body;
     try{
         const data = await db('users').where({ name: creds.name} ).first()
