@@ -45,7 +45,7 @@ router.put('/:id', async(req, res) => {
         const reviews = await db('reviews').where({ id: req.params.id }).update(data)
 
         if(reviews) {
-            const average = await db('reviews').where({textbook_id: tid.textbook_id }).avg({'avg-rating': 'rating'}).first()
+            const average = await db('reviews').where({textbook_id: tid.textbook_id }).avg({'avg_rating': 'rating'}).first()
             console.log(average)
             const textbook = await db('text-books').where({id: tid.textbook_id}).update(average)
             res.status(200).json(reviews)
@@ -65,7 +65,7 @@ router.delete('/:id', async(req, res) => {
         db(id)
         const data = await db('reviews').where({ id: req.params.id }).del()
         if(data) {
-            const average = await db('reviews').where({textbook_id: tid.textbook_id }).avg({'avg-rating': 'rating'}).first()
+            const average = await db('reviews').where({textbook_id: tid.textbook_id }).avg({'avg_rating': 'rating'}).first()
             
             const textbook = await db('text-books').where({id: tid.textbook_id }).update(average)
             res.status(204).json(data)

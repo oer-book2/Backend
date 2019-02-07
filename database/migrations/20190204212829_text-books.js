@@ -7,7 +7,9 @@ exports.up = function(knex, Promise) {
       books.string('author', 244)
       books.string('subject', 244)
       books.text('description', 380)
-      books.integer('avg-rating')
+      books.string('link')
+      books.string('imageArea')
+      books.integer('avg_rating')
 
   })
 };

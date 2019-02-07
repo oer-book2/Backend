@@ -33,7 +33,7 @@ function authenticate(req, res, next) {
 
 
 
-router.get('/', authenticate, async(req, res) => {
+router.get('/',  async(req, res) => {
     try{
         const data = await users('users')
         console.log(data)

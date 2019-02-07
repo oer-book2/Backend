@@ -63,7 +63,7 @@ router.get('/', authenticate, async(req,res) => {
     
         if(bookdata) {
             const reviews = await db('reviews').where({ textbook_id: id }).insert({...req.body, textbook_id: id})
-            const average = await db('reviews').where({textbook_id: id }).avg({'avg-rating': 'rating'}).first()
+            const average = await db('reviews').where({textbook_id: id }).avg({'avg_rating': 'rating'}).first()
             
             const textbook = await db('text-books').where({id}).update(average)
             // textbook.then(res => {console.log(res)}).catch( err => {console.log(err)})
