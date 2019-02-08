@@ -38,8 +38,6 @@ router.post('/', async(req, res) => {
             res.status(400).json({message: `please enter name and password.`})
         }
     }catch(err){
-        console.log(err)
-
         res.status(500).json({message: `there was an error entering name or password.`})
     }
 });
