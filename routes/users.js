@@ -31,7 +31,6 @@ function authenticate(req, res, next) {
 router.get('/', async (req, res) => {
     try {
         const data = await users('users');
-        console.log(data);
         if (data) {
             res.status(200).json(data);
         } else res.status(400).json(`no users found`);

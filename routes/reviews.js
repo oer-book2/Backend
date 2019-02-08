@@ -32,7 +32,6 @@ router.post('/', async (req, res) => {
             res.status(404).json(`{error: please enter review}`);
         }
     } catch (err) {
-        console.log(err);
         res.status(500).json(err);
     }
 });
@@ -43,17 +42,16 @@ router.put('/:id', async (req, res) => {
             .where({ id: req.params.id })
             .select('textbook_id')
             .first();
-        console.log(tid);
         const data = req.body;
         const reviews = await db('reviews')
             .where({ id: req.params.id })
             .update(data);
+
         if (reviews) {
             const average = await db('reviews')
                 .where({ textbook_id: tid.textbook_id })
                 .avg({ avg_rating: 'rating' })
                 .first();
-            console.log(average);
             const textbook = await db('text-books')
                 .where({ id: tid.textbook_id })
                 .update(average);
@@ -62,13 +60,11 @@ router.put('/:id', async (req, res) => {
             res.status(404).json(`{error: review was not edited}`);
         }
     } catch (err) {
-        console.log(err);
         res.status(500).json(err);
     }
 });
 
 router.delete('/:id', async (req, res) => {
-    //something is up with the delete. going to else statement
     try {
         const tid = await db('reviews')
             .where({ id: req.params.id })
@@ -84,7 +80,6 @@ router.delete('/:id', async (req, res) => {
                 .where({ textbook_id: tid.textbook_id })
                 .avg({ avg_rating: 'rating' })
                 .first();
-
             const textbook = await db('text-books')
                 .where({ id: tid.textbook_id })
                 .update(average);
@@ -93,7 +88,6 @@ router.delete('/:id', async (req, res) => {
             res.status(404).json(`{ your review was not deleted }`);
         }
     } catch (err) {
-        console.log(err);
         res.status(500).json(err);
     }
 });
